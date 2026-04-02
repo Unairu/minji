@@ -3,95 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단위 환산기 (mm ↔ m)</title>
+    <title>단위 환산기</title>
     <style>
-        /* 모바일 기본 스타일 초기화 */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, sans-serif;
         }
 
         body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            /* 상단에 너무 붙지 않게 약간의 여백만 줌 */
+            padding-top: 50px; 
         }
 
         .container {
             width: 100%;
             max-width: 400px;
             background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
         }
 
         h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 1.6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
 
-        .input-group {
-            margin-bottom: 20px;
+        .input-box {
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
             font-weight: bold;
-            margin-bottom: 8px;
-            color: #555;
-            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #444;
+            padding-left: 5px;
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            font-size: 1.2rem;
-            border: 2px solid #ddd;
-            border-radius: 12px;
+            padding: 18px;
+            font-size: 1.4rem; /* 숫자를 더 잘 보이게 키움 */
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
             outline: none;
-            transition: border-color 0.3s;
-            background-color: #fafafa;
+            background-color: #fdfdfd;
+            transition: 0.2s;
         }
 
         input:focus {
-            border-color: #007bff;
+            border-color: #4dabf7;
             background-color: #fff;
         }
 
-        .arrow {
+        .divider {
             text-align: center;
             font-size: 1.5rem;
-            color: #007bff;
+            color: #adb5bd;
             margin: 10px 0;
         }
 
         .btn-reset {
             width: 100%;
-            padding: 15px;
-            background-color: #6c757d;
+            padding: 18px;
+            background-color: #495057;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
             font-weight: bold;
+            margin-top: 20px;
             cursor: pointer;
-            margin-top: 10px;
         }
 
-        .tips {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #888;
+        .footer-note {
+            margin-top: 25px;
             text-align: center;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            color: #868e96;
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -100,35 +107,45 @@
 <div class="container">
     <h2>📏 단위 환산기</h2>
 
-    <div class="input-group">
-        <label for="mm">밀리미터 (mm)</label>
-        <input type="number" id="mm" placeholder="mm 입력" oninput="convert('mm')">
+    <div class="input-box">
+        <label>밀리미터 (mm)</label>
+        <input type="number" id="mm" placeholder="값을 입력하세요" oninput="calc('mm')">
     </div>
 
-    <div class="arrow">↕</div>
+    <div class="divider">⇅</div>
 
-    <div class="input-group">
-        <label for="meter">미터 (m)</label>
-        <input type="number" id="meter" placeholder="m 입력" oninput="convert('m')">
+    <div class="input-box">
+        <label>미터 (m)</label>
+        <input type="number" id="meter" placeholder="값을 입력하세요" oninput="calc('m')">
     </div>
 
-    <button class="btn-reset" onclick="reset()">초기화</button>
+    <button class="btn-reset" onclick="clearAll()">전체 초기화</button>
 
-    <div class="tips">
-        1,000 mm = 1 m <br>
-        숫자를 입력하면 실시간으로 바뀝니다.
+    <div class="footer-note">
+        <strong>1,000mm = 1m</strong><br>
+        숫자를 입력하면 자동으로 계산됩니다.
     </div>
 </div>
 
 <script>
-    function convert(unit) {
-        const mmInput = document.getElementById('mm');
-        const mInput = document.getElementById('meter');
+    function calc(type) {
+        const mmEl = document.getElementById('mm');
+        const mEl = document.getElementById('meter');
 
-        if (unit === 'mm') {
-            const mmValue = mmInput.value;
-            if (mmValue === "") {
-                mInput.value = "";
-            } else {
-                // mm -> m (나누기 1000)
-                mInput.value = (parseFloat
+        if (type === 'mm') {
+            const val = mmEl.value;
+            mEl.value = val ? (parseFloat(val) / 1000) : "";
+        } else {
+            const val = mEl.value;
+            mmEl.value = val ? (parseFloat(val) * 1000) : "";
+        }
+    }
+
+    function clearAll() {
+        document.getElementById('mm').value = "";
+        document.getElementById('meter').value = "";
+    }
+</script>
+
+</body>
+</html>
